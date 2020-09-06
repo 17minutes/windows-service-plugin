@@ -13,7 +13,7 @@ if "%APP_HOME%" == "" set APP_HOME=.\\
 set SERVICE_EXE=%APP_HOME%${serviceExeName}
 
 @rem Setup all necessary variables
-set CLASSPATH=${classpath}
+set CLASSPATH="${classpath}"
 
 @rem Install ${applicationName}
 "%SERVICE_EXE%" install ${installOptions}

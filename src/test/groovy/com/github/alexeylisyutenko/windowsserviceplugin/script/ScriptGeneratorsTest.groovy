@@ -11,9 +11,9 @@ import spock.lang.Specification
 class ScriptGeneratorsTest extends Specification {
 
     @Rule
-    public final TemporaryFolder temporaryFolder = new TemporaryFolder()
+    public TemporaryFolder temporaryFolder = new TemporaryFolder()
 
-    private WindowsServicePluginConfiguration setupBasicWindowsServicePluginConfiguration() {
+    private static WindowsServicePluginConfiguration setupBasicWindowsServicePluginConfiguration() {
         WindowsServicePluginConfiguration configuration = new WindowsServicePluginConfiguration()
 
         configuration.architecture = 'AMD64'
@@ -30,7 +30,7 @@ class ScriptGeneratorsTest extends Specification {
         configuration
     }
 
-    private ConfigurableFileCollection setupBasicClasspathFileCollection() {
+    private static ConfigurableFileCollection setupBasicClasspathFileCollection() {
         ProjectBuilder.builder().build().files("testProject.jar")
     }
 
@@ -90,6 +90,20 @@ class ScriptGeneratorsTest extends Specification {
             it.contains("--Jvm=\"C:\\Program Files\\Java\\jdk1.8.0_112\\jre\\bin\\server\\jvm.dll\"")
         }
         installScriptLines.any { it.contains("--LogPath=.\\procrun-logs") }
+    }
+
+    def "Classpath value should be properly escaped"() {
+        given:
+        def configuration = setupBasicWindowsServicePluginConfiguration()
+        def fileCollection = setupBasicClasspathFileCollection()
+        def generator = new InstallScriptGenerator('testProject', fileCollection, configuration, temporaryFolder.root)
+
+        when:
+        generator.generate()
+        def installScriptLines = new File(temporaryFolder.root, "testProject-install.bat").readLines()
+
+        then:
+        installScriptLines.any {it.startsWith("set CLASSPATH=\"") && it.endsWith("\"") }
     }
 
     def "All additional procrun configuration parameters should be present in a resulting install.bat file if they're set"() {

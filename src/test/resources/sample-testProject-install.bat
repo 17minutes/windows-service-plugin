@@ -13,7 +13,7 @@ if "%APP_HOME%" == "" set APP_HOME=.\
 set SERVICE_EXE=%APP_HOME%testProject.exe
 
 @rem Setup all necessary variables
-set CLASSPATH=%APP_HOME%lib\testProject.jar
+set CLASSPATH="%APP_HOME%lib\testProject.jar"
 
 @rem Install testProject
 "%SERVICE_EXE%" install ^

@@ -13,7 +13,7 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 class WindowsServicePluginTest extends Specification {
 
     @Rule
-    public final TemporaryFolder testProjectDir = new TemporaryFolder()
+    public TemporaryFolder testProjectDir = new TemporaryFolder()
     File buildFile
     File settingsFile
 
@@ -22,7 +22,7 @@ class WindowsServicePluginTest extends Specification {
         settingsFile = testProjectDir.newFile('settings.gradle')
     }
 
-    private Project setupBasicProject() {
+    private static Project setupBasicProject() {
         Project project = ProjectBuilder.builder().build()
         project.apply plugin: 'com.github.alexeylisyutenko.windows-service-plugin'
         return project
@@ -320,7 +320,7 @@ class WindowsServicePluginTest extends Specification {
         then:
         result.task(":createWindowsService").outcome == SUCCESS
         installScriptLines.any {
-            it.contains("set CLASSPATH=%APP_HOME%lib\\testProject.jar;%APP_HOME%lib\\first-dependency.jar;%APP_HOME%lib\\second-dependency.jar;%APP_HOME%lib\\third-dependency.jar")
+            it.contains("set CLASSPATH=\"%APP_HOME%lib\\testProject.jar;%APP_HOME%lib\\first-dependency.jar;%APP_HOME%lib\\second-dependency.jar;%APP_HOME%lib\\third-dependency.jar\"")
         }
         new File(testProjectDir.root, "build/windows-service/lib/testProject.jar").exists()
         new File(testProjectDir.root, "build/windows-service/lib/first-dependency.jar").exists()
@@ -369,7 +369,7 @@ class WindowsServicePluginTest extends Specification {
         then:
         result.task(":createWindowsService").outcome == SUCCESS
         installScriptLines.any {
-            it.contains("set CLASSPATH=%APP_HOME%lib\\first-overriding-classpath-dependency.jar;%APP_HOME%lib\\second-overriding-classpath-dependency.jar")
+            it.contains("set CLASSPATH=\"%APP_HOME%lib\\first-overriding-classpath-dependency.jar;%APP_HOME%lib\\second-overriding-classpath-dependency.jar\"")
         }
         !new File(testProjectDir.root, "build/windows-service/lib/testProject.jar").exists()
         !new File(testProjectDir.root, "build/windows-service/lib/first-dependency.jar").exists()
